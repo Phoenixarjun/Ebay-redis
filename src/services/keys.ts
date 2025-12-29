@@ -19,5 +19,6 @@ export const itemsKey = (itemId: string) => `items#${itemId}`;
 export const itemsByViewsKey = () => 'items:views';
 export const itemsByEndingAtKey = () => 'items:endingat';
 export const itemsByLikesKey = () => 'items:likes';
+export const itemsViewsKey = (itemId: string) => `items:views#${itemId}`;
 
 export const itemCommentsKey = (itemId: string) => `items:comments#${itemId}`;
