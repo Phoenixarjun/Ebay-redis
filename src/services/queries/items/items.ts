@@ -6,7 +6,7 @@ import { serialize } from './serialize';
 
 import { genId } from '$services/utils';
 
-import { itemsKey, itemsByViewsKey, itemsByEndingAtKey } from '$services/keys';
+import { itemsKey, itemsByViewsKey, itemsByEndingAtKey, itemsBypriceKey } from '$services/keys';
 
 import { deserialize } from './deserialize';
 
@@ -43,6 +43,10 @@ export const createItem = async (attrs: CreateItemAttrs, userId: string) => {
     client.zAdd(itemsByEndingAtKey(), {
       value: id,
       score: attrs.endingAt.toMillis()
+    }),
+    client.zAdd(itemsBypriceKey(), {
+      value: id,
+      score: 0
     })
   ]);
   return id;
