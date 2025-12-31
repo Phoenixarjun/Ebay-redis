@@ -6,7 +6,7 @@ import { getItem } from './items';
 
 export const createBid = async (attrs: CreateBidAttrs) => {
 
-		return withLock(attrs.itemId, async () => {
+		return withLock(attrs.itemId, async (lockedClient: typeof client, signal: any) => {
 
 		const item = await getItem(attrs.itemId);
 		if(!item) {
@@ -22,14 +22,18 @@ export const createBid = async (attrs: CreateBidAttrs) => {
 
 
 		const serialized = serializeHistory(attrs.amount, attrs.createdAt.toMillis());
+
+		if(signal.expired) {
+			throw new Error('Could not acquire lock, please try again');
+		}
 		return Promise.all([
-			client.rPush(bidHistoryKey(attrs.itemId), serialized),
-			client.hSet(itemsKey(item.id), {
+			lockedClient.rPush(bidHistoryKey(attrs.itemId), serialized),
+			lockedClient.hSet(itemsKey(item.id), {
 					bids: item.bids + 1,
 					price: attrs.amount,
 					highestBidderId: attrs.userId
 				}),
-			client.zAdd(itemsBypriceKey(), {
+			lockedClient.zAdd(itemsBypriceKey(), {
 					value: item.id,
 					score: attrs.amount
 				})
