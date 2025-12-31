@@ -1,13 +1,12 @@
 import type { CreateBidAttrs, Bid } from '$services/types';
-import { client } from '$services/redis';
+import { client, withLock } from '$services/redis';
 import { bidHistoryKey, itemsKey, itemsBypriceKey } from '$services/keys';
 import { DateTime } from 'luxon';
 import { getItem } from './items';
 
 export const createBid = async (attrs: CreateBidAttrs) => {
-	return client.executeIsolated( async (isolatedClient) => {
 
-		await isolatedClient.watch(itemsKey(attrs.itemId));
+		return withLock(attrs.itemId, async () => {
 
 		const item = await getItem(attrs.itemId);
 		if(!item) {
@@ -23,20 +22,53 @@ export const createBid = async (attrs: CreateBidAttrs) => {
 
 
 		const serialized = serializeHistory(attrs.amount, attrs.createdAt.toMillis());
-		return isolatedClient
-		.multi()
-		.rPush(bidHistoryKey(attrs.itemId), serialized)
-		.hSet(itemsKey(item.id), {
-				bids: item.bids + 1,
-				price: attrs.amount,
-				highestBidderId: attrs.userId
-			})
-			.zAdd(itemsBypriceKey(), {
-				value: item.id,
-				score: attrs.amount
-			})
-		.exec();
+		return Promise.all([
+			client.rPush(bidHistoryKey(attrs.itemId), serialized),
+			client.hSet(itemsKey(item.id), {
+					bids: item.bids + 1,
+					price: attrs.amount,
+					highestBidderId: attrs.userId
+				}),
+			client.zAdd(itemsBypriceKey(), {
+					value: item.id,
+					score: attrs.amount
+				})
+		]);
 	});
+
+
+	// return client.executeIsolated( async (isolatedClient) => {
+
+	// 	await isolatedClient.watch(itemsKey(attrs.itemId));
+
+	// 	const item = await getItem(attrs.itemId);
+	// 	if(!item) {
+	// 		throw new Error('Item not found');
+	// 	}
+	// 	if(attrs.amount <= item.price) {
+	// 		throw new Error('Bid amount must be greater than current bid');
+	// 	}
+
+	// 	if(item.endingAt.diff(DateTime.now()).toMillis() < 0){
+	// 		throw new Error('Bidding time has ended for this item');
+	// 	}
+
+
+	// 	const serialized = serializeHistory(attrs.amount, attrs.createdAt.toMillis());
+	// 	return isolatedClient
+	// 	.multi()
+	// 	.rPush(bidHistoryKey(attrs.itemId), serialized)
+	// 	.hSet(itemsKey(item.id), {
+	// 			bids: item.bids + 1,
+	// 			price: attrs.amount,
+	// 			highestBidderId: attrs.userId
+	// 		})
+	// 		.zAdd(itemsBypriceKey(), {
+	// 			value: item.id,
+	// 			score: attrs.amount
+	// 		})
+	// 	.exec();
+	// });
 
 
 

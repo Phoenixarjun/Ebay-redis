@@ -1,4 +1,27 @@
-export const withLock = async () => {};
+import { randomBytes } from 'crypto';
+import { client } from '../redis/client';
+
+export const withLock = async (key: string, cb: () => any) => {
+	const retryDelayMs = 100;
+	let retries = 20;
+
+	const token = randomBytes(6).toString('hex');
+	const lockKey = `lock:${key}`;
+
+	while(retries >= 0){
+		retries--;
+		const acquired = await client.set(lockKey, token, { NX: true, PX: 2000 });
+		if (acquired) {
+			try {
+				return await cb();
+			} finally {
+				await client.del(lockKey);
+			}
+		}
+		await pause(retryDelayMs);
+	}
+
+};
 
 const buildClientProxy = () => {};
 
