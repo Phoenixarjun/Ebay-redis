@@ -22,3 +22,4 @@ export const itemsByLikesKey = () => 'items:likes';
 export const itemsViewsKey = (itemId: string) => `items:views#${itemId}`;
 export const bidHistoryKey = (itemId: string) => `history#${itemId}`;
 export const itemsBypriceKey = () => 'items:price';
+export const itemsIndexKey = () => 'idx:items';

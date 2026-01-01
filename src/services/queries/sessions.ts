@@ -4,6 +4,7 @@ import { sessionsKey } from '$services/keys';
 
 
 export const getSession = async (id: string) => {
+  
   const session = await client.hGetAll(sessionsKey(id));
   if(Object.keys(session).length === 0) {
     return null;
