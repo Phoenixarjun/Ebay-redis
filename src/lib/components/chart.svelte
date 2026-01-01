@@ -30,14 +30,52 @@
 			return;
 		}
 
+		// Premium Chart Config
 		chart = new Chart(context, {
 			type: 'line',
 			options: {
 				responsive: true,
-				aspectRatio: 5,
+				aspectRatio: 3, // Make it a bit taller
 				plugins: {
-					legend: {
-						display: false
+					legend: { display: false },
+					tooltip: {
+						backgroundColor: '#000',
+						titleColor: '#fff',
+						bodyColor: '#fff',
+						padding: 10,
+						cornerRadius: 8,
+						displayColors: false
+					}
+				},
+				interaction: {
+					intersect: false,
+					mode: 'index'
+				},
+				scales: {
+					x: {
+						grid: { display: false },
+						border: { display: false }
+					},
+					y: {
+						grid: {
+							color: '#f3f4f6',
+							borderDash: [5, 5] // Dashed grid lines
+						},
+						border: { display: false },
+						ticks: {
+							callback: (value) => '$' + value
+						}
+					}
+				},
+				elements: {
+					line: {
+						tension: 0.4, // Smooth curves
+						borderWidth: 3
+					},
+					point: {
+						radius: 0, // Hide points by default
+						hoverRadius: 6,
+						backgroundColor: '#FF4500' // Accent color
 					}
 				}
 			},
@@ -45,9 +83,17 @@
 				labels: labels,
 				datasets: [
 					{
-						label: '',
+						label: 'Current Bid',
 						data: data,
-						borderColor: 'rgb(75, 192, 192)'
+						borderColor: '#FF4500', // Accent
+						backgroundColor: (context) => {
+							const ctx = context.chart.ctx;
+							const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+							gradient.addColorStop(0, 'rgba(255, 69, 0, 0.2)');
+							gradient.addColorStop(1, 'rgba(255, 69, 0, 0)');
+							return gradient;
+						},
+						fill: true
 					}
 				]
 			}

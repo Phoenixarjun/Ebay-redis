@@ -1,5 +1,33 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 @import 'material-icons/iconfont/material-icons.css';
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+	html {
+		font-family: 'Inter', sans-serif;
+		scroll-behavior: smooth;
+		@apply bg-secondary text-primary antialiased;
+	}
+
+	body {
+		@apply min-h-screen overflow-x-hidden;
+	}
+
+	h1, h2, h3, h4, h5, h6 {
+		@apply font-bold tracking-tight;
+	}
+
+	/* Custom Scrollbar for a premium feel */
+	::-webkit-scrollbar {
+		width: 8px;
+	}
+	::-webkit-scrollbar-track {
+		@apply bg-transparent;
+	}
+	::-webkit-scrollbar-thumb {
+		@apply bg-gray-300 rounded-full hover:bg-accent transition-colors;
+	}
+}

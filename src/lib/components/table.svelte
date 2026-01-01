@@ -49,32 +49,30 @@
 	}
 </script>
 
-<table class="table table-auto p-4 w-full bg-white shadow rounded-lg bg-gray-100">
-	<thead class="bg-blue-400">
+<table class="w-full text-left border-collapse">
+	<thead class="bg-gray-50 border-b border-gray-200">
 		<tr>
 			{#each columns as column}
 				<th
-					class:hover:bg-blue-300={column.sortable}
 					class:cursor-pointer={column.sortable}
-					class="border-b-2 p-4 text-left whitespace-nowrap font-semibold"
+					class="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider hover:text-gray-700 transition-colors"
 					on:click={() => column.sortable && onHeaderClick(column.id || column.field)}
 				>
-					{column.label}
-
-					{#if (sort.sortBy === column.field || sort.sortBy === column.id) && sort.direction !== ''}
-						<Icon name={sort.direction === 'ASC' ? 'arrow_upward' : 'arrow_downward'} />
-					{:else}
-						<span style:display="inline-block" style:width="16px" />
-					{/if}
+					<div class="flex items-center gap-1">
+						{column.label}
+						{#if (sort.sortBy === column.field || sort.sortBy === column.id) && sort.direction !== ''}
+							<Icon name={sort.direction === 'ASC' ? 'arrow_upward' : 'arrow_downward'} size="14px" />
+						{/if}
+					</div>
 				</th>
 			{/each}
 		</tr>
 	</thead>
-	<tbody>
+	<tbody class="divide-y divide-gray-100 bg-white">
 		{#each items as item}
-			<tr class="text-gray-700">
+			<tr class="hover:bg-gray-50 transition-colors">
 				{#each columns as column}
-					<td class="border-b-2 p-4">
+					<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
 						{#if column.component}
 							<svelte:component
 								this={column.component}
@@ -85,63 +83,43 @@
 						{:else}
 							{item[column.field]}
 						{/if}
-					</td>{/each}
+					</td>
+				{/each}
 			</tr>
 		{/each}
 	</tbody>
 </table>
 
-<div class="px-5 bg-white py-5 flex flex-col xs:flex-row items-center xs:justify-between">
-	<div class="flex items-center">
+<div class="px-6 py-4 border-t border-gray-200 bg-white rounded-b-xl flex items-center justify-between">
+	<div class="flex items-center gap-2">
 		<button
 			type="button"
-			class="w-full p-4 border text-base rounded-l-xl text-gray-600 bg-white hover:bg-gray-100"
+			class="p-2 rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+			disabled={sort.page === 0}
 			on:click={() => onChangePage(sort.page - 1)}
 		>
-			<svg
-				width="9"
-				fill="currentColor"
-				height="8"
-				class=""
-				viewBox="0 0 1792 1792"
-				xmlns="http://www.w3.org/2000/svg"
-			>
-				<path
-					d="M1427 301l-531 531 531 531q19 19 19 45t-19 45l-166 166q-19 19-45 19t-45-19l-742-742q-19-19-19-45t19-45l742-742q19-19 45-19t45 19l166 166q19 19 19 45t-19 45z"
-				/>
-			</svg>
+			<Icon name="chevron_left" />
 		</button>
 
-		{#each Array(totalPages)
-			.fill(0)
-			.map((_, i) => i) as index}
-			<button
-				type="button"
-				class="w-full px-4 py-2 border-t border-b text-base text-indigo-500 bg-white hover:bg-gray-100 "
-				class:bg-indigo-100={index === sort.page}
-				on:click={() => onChangePage(index)}
-			>
-				{index + 1}
-			</button>
-		{/each}
+		<div class="flex items-center gap-1">
+			{#each Array(totalPages).fill(0).map((_, i) => i) as index}
+				<button
+					type="button"
+					class="w-8 h-8 rounded-lg text-sm font-medium transition-colors {index === sort.page ? 'bg-black text-white' : 'text-gray-500 hover:bg-gray-100'}"
+					on:click={() => onChangePage(index)}
+				>
+					{index + 1}
+				</button>
+			{/each}
+		</div>
 
 		<button
 			type="button"
-			class="w-full p-4 border-t border-b border-r text-base  rounded-r-xl text-gray-600 bg-white hover:bg-gray-100"
+			class="p-2 rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+			disabled={sort.page >= totalPages - 1}
 			on:click={() => onChangePage(sort.page + 1)}
 		>
-			<svg
-				width="9"
-				fill="currentColor"
-				height="8"
-				class=""
-				viewBox="0 0 1792 1792"
-				xmlns="http://www.w3.org/2000/svg"
-			>
-				<path
-					d="M1363 877l-742 742q-19 19-45 19t-45-19l-166-166q-19-19-19-45t19-45l531-531-531-531q-19-19-19-45t19-45l166-166q19-19 45-19t45 19l742 742q19 19 19 45t-19 45z"
-				/>
-			</svg>
+			<Icon name="chevron_right" />
 		</button>
 	</div>
 </div>

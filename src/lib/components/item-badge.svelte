@@ -21,13 +21,13 @@
 		const sold = item.price > 0;
 
 		if (ended && sold) {
-			return { value: 'sold', role: 'success' };
+			return { value: 'Sold', role: 'success' };
 		} else if (ended) {
-			return { value: 'unsold', role: 'danger' };
+			return { value: 'Ended', role: 'danger' };
 		} else {
-			return { value: 'active', role: 'secondary' };
+			return { value: 'Active', role: 'secondary' };
 		}
 	}
 </script>
 
-<Badge role={status(item).role}>{status(item).value}</Badge>
+<Badge role={status(item).role as "success" | "danger" | "secondary"}>{status(item).value}</Badge>

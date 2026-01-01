@@ -37,28 +37,28 @@
 	}
 </script>
 
-<div class="relative w-full bg-gray-100 rounded my-2 p-4">
-	<div class="absolute inset-y-1/2 z-10">
+<div class="relative w-full group">
+	<div class="absolute inset-y-0 left-0 z-10 flex items-center">
 		<button
 			on:click={goLeft}
-			style:transform="translate(-50%, -50%)"
-			class="flex text-center items-center p-3 bg-gray-800 hover:bg-gray-600 cursor-pointer transition ease-in duration-100 uppercase rounded-full hover:text-white focus:outline-none"
+			class="ml-2 p-3 bg-white/80 hover:bg-white backdrop-blur-md shadow-lg rounded-full text-primary hover:text-accent focus:outline-none transform transition-all duration-200 hover:scale-110 opacity-0 group-hover:opacity-100"
 		>
-			<Icon name="arrow_back_ios" klass="text-white" size="24px" />
+			<Icon name="arrow_back" size="24px" />
 		</button>
 	</div>
-	<div class="overflow-hidden relative" bind:this={container}>
-		<div class="flex relative min-h-[200px]" style:right={$offset + 'px'} bind:this={scroller}>
+	
+	<div class="overflow-hidden relative rounded-2xl" bind:this={container}>
+		<div class="flex relative min-h-[200px] gap-6 px-4 py-6" style:right={$offset + 'px'} bind:this={scroller}>
 			<slot />
 		</div>
 	</div>
-	<div class="absolute inset-y-1/2 right-0 z-10">
+
+	<div class="absolute inset-y-0 right-0 z-10 flex items-center">
 		<button
 			on:click={goRight}
-			style:transform="translate(50%, -50%)"
-			class="flex text-center items-center p-3 bg-gray-800 hover:bg-gray-600 cursor-pointer transition ease-in duration-100 uppercase rounded-full hover:text-white focus:outline-none"
+			class="mr-2 p-3 bg-white/80 hover:bg-white backdrop-blur-md shadow-lg rounded-full text-primary hover:text-accent focus:outline-none transform transition-all duration-200 hover:scale-110 opacity-0 group-hover:opacity-100"
 		>
-			<Icon name="arrow_forward_ios" klass="text-white" size="24px" />
+			<Icon name="arrow_forward" size="24px" />
 		</button>
 	</div>
 </div>

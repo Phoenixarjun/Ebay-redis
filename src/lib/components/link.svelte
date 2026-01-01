@@ -3,4 +3,4 @@
 	export let child: string;
 </script>
 
-<a {href} class="text-indigo-600 hover:text-indigo-900">{child}</a>
+<a {href} class="text-accent hover:text-accent-hover transition-colors font-medium">{child}</a>

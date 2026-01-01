@@ -86,8 +86,10 @@
 	);
 </script>
 
-<Header />
-<div style:min-height="80vh" class="container mx-auto">
-	<slot />
+<div class="min-h-screen flex flex-col bg-surface text-primary font-sans antialiased selection:bg-accent selection:text-white">
+	<Header />
+	<main class="flex-grow w-full">
+		<slot />
+	</main>
+	<Footer />
 </div>
-<Footer />

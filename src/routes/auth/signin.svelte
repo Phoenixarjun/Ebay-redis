@@ -2,16 +2,20 @@
 	import { goto } from '$app/navigation';
 	import { post, f } from '$lib/fetch';
 	import { session } from '$app/stores';
+	import Button from '$lib/components/button.svelte';
 
 	let username = '';
 	let password = '';
 	let err = null;
+	let loading = false;
 
 	async function onSubmit() {
+		loading = true;
 		let _data: any;
 		[_data, err] = await post('/auth/signin', { username, password });
 
 		if (err) {
+			loading = false;
 			return;
 		}
 
@@ -22,57 +26,70 @@
 	}
 </script>
 
-<div
-	class="flex flex-col mx-auto items-center max-w-md px-4 py-8 bg-white rounded-lg shadow dark:bg-gray-800 sm:px-6 md:px-8 lg:px-10"
->
-	<div class="self-center mb-2 text-xl font-light text-gray-800 sm:text-2xl dark:text-white">
-		Sign In
-	</div>
-	<span
-		class="justify-center text-sm text-center text-gray-500 flex-items-center dark:text-gray-400"
-	>
-		Don't have an account ?
-		<a href="/auth/signup" class="text-sm text-blue-500 underline hover:text-blue-700"> Sign up </a>
-	</span>
-	<div class="p-6 mt-8">
-		<form on:submit|preventDefault={onSubmit}>
-			<div class="flex flex-col mb-2">
-				<div class="relative">
+<div class="min-h-[calc(100vh-4rem)] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-surface">
+	<div class="max-w-md w-full space-y-8 bg-white p-10 rounded-3xl shadow-2xl border border-gray-100">
+		<div class="text-center">
+			<h2 class="mt-6 text-3xl font-black text-gray-900 tracking-tight">Welcome Back</h2>
+			<p class="mt-2 text-sm text-gray-600">
+				Sign in to access your dashboard
+			</p>
+		</div>
+
+		<form class="mt-8 space-y-6" on:submit|preventDefault={onSubmit}>
+			<input type="hidden" name="remember" value="true" />
+			<div class="space-y-4">
+				<div>
+					<label for="username" class="sr-only">Username</label>
 					<input
-						bind:value={username}
-						type="text"
-						id="create-account-pseudo"
-						class=" rounded-lg border-transparent flex-1 appearance-none border border-gray-300 w-full py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+						id="username"
 						name="username"
-						placeholder="User Name"
+						type="text"
+						required
+						class="appearance-none rounded-xl relative block w-full px-4 py-3 border border-gray-200 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent focus:z-10 sm:text-sm bg-gray-50"
+						placeholder="Username"
+						bind:value={username}
 					/>
 				</div>
-			</div>
-			<div class="flex flex-col mb-2">
-				<div class=" relative ">
+				<div>
+					<label for="password" class="sr-only">Password</label>
 					<input
-						bind:value={password}
-						type="password"
 						id="password"
-						class="rounded-lg border-transparent flex-1 appearance-none border border-gray-300 w-full py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+						name="password"
+						type="password"
+						required
+						class="appearance-none rounded-xl relative block w-full px-4 py-3 border border-gray-200 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent focus:z-10 sm:text-sm bg-gray-50"
 						placeholder="Password"
+						bind:value={password}
 					/>
 				</div>
 			</div>
 
 			{#if err}
-				<div class="my-4 text-red-600">
-					{err}
+				<div class="rounded-lg bg-red-50 p-4">
+					<div class="flex">
+						<div class="ml-3">
+							<h3 class="text-sm font-medium text-red-800">Login Failed</h3>
+							<div class="mt-2 text-sm text-red-700">
+								<p>{err}</p>
+							</div>
+						</div>
+					</div>
 				</div>
 			{/if}
 
-			<div class="flex w-full my-4">
-				<button
-					type="submit"
-					class="py-2 px-4 bg-purple-600 hover:bg-purple-700 focus:ring-purple-500 focus:ring-offset-purple-200 text-white w-full transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-lg "
-				>
+			<div>
+				<Button type="submit" variant="primary" size="lg" className="w-full" {loading}>
 					Sign In
-				</button>
+				</Button>
+			</div>
+
+			<div class="text-center text-sm">
+				<p class="text-gray-600">
+					Don't have an account?
+					<a href="/auth/signup" class="font-medium text-accent hover:text-accent-hover transition-colors">
+						Sign up now
+					</a>
+				</p>
 			</div>
 		</form>
 	</div>

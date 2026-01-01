@@ -3,9 +3,10 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { browser } from '$app/env';
-	import ItemBadge from '$lib/components/item-badge.svelte';
 	import Table from '$lib/components/table.svelte';
 	import Link from '$lib/components/link.svelte';
+	import Button from '$lib/components/button.svelte';
+	import Icon from '$lib/components/icon.svelte';
 
 	interface ItemSummary {
 		id: string;
@@ -51,7 +52,7 @@
 		const endingAt = DateTime.fromMillis(_t);
 
 		if (endingAt < DateTime.now()) {
-			return '-';
+			return 'Ended';
 		} else {
 			return endingAt.toRelative().replace('in ', '');
 		}
@@ -59,18 +60,17 @@
 
 	const columns = [
 		{ label: 'Name', field: 'name', sortable: true },
-		{ label: 'Price', field: 'price', sortable: true },
+		{ label: 'Price', field: 'price', sortable: true, formatter: (item: any) => '$' + item.price.toFixed(2) },
 		{
 			field: 'endingAt',
-			label: 'Time Left',
+			label: 'Status',
 			formatter: (item: ItemSummary) => timeLeft(item.endingAt),
 			sortable: true
 		},
-		{ label: '# Bids', field: 'bids', sortable: true },
-		{ label: '# Views', field: 'views', sortable: true },
-		{ label: '# Likes', field: 'likes', sortable: true },
+		{ label: 'Bids', field: 'bids', sortable: true },
+		{ label: 'Views', field: 'views', sortable: true },
 		{
-			label: 'Link',
+			label: '',
 			component: Link,
 			props: (item: ItemSummary) => {
 				return { href: `/items/${item.id}`, child: 'View' };
@@ -94,32 +94,27 @@
 	function onChange(e: any) {
 		updateParams(e.detail);
 	}
-
-	function onSelectChange(e: any) {
-		updateParams({ tag: e.target.value });
-	}
 </script>
 
-<div class="flex justify-between">
-	<div class="text-3xl mb-4">Your Items</div>
-	<!-- <div>
-		Filter By Status
-		<select
-			value={sort.tag}
-			on:change={onSelectChange}
-			id="duration"
-			class="border py-2 pr-4 pl-2 shadow-sm border-gray-300 rounded"
-		>
-			<option value={''}>Show All</option>
-			<option value={'active'}>Show Active</option>
-			<option value={'unsold'}>Show Unsold</option>
-			<option value={'sold'}>Show Sold</option>
-		</select>
-	</div> -->
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+	<div class="flex items-center justify-between mb-8">
+		<div>
+			<h1 class="text-3xl font-black text-gray-900 tracking-tight">Your Listings</h1>
+			<p class="text-gray-500 mt-1">Manage all your active and past auctions.</p>
+		</div>
+		<a href="/dashboard/items/new">
+			<Button variant="primary">
+				<div class="flex items-center gap-2">
+					<Icon name="add" size="20px" />
+					<span>Create New Listing</span>
+				</div>
+			</Button>
+		</a>
+	</div>
+
+	{#if err}
+		<div class="bg-red-50 p-4 rounded-xl text-red-700 font-bold mb-6">{err}</div>
+	{/if}
+
+	<Table on:change={onChange} {totalPages} {sort} {items} {columns} />
 </div>
-
-{#if err}
-	<div class="text-red-500 text-lg font-bold">{err}</div>
-{/if}
-
-<Table on:change={onChange} {totalPages} {sort} {items} {columns} />
